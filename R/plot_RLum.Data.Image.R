@@ -125,7 +125,9 @@ plot_settings <- modifyList(x = list(
     useRaster = TRUE,
     stretch = "hist",
     col = c(grDevices::hcl.colors(50, palette = "Inferno")),
-    cex = 1
+    cex = 1,
+    digits=1,
+    scientific=TRUE
   ), val = list(...), keep.null = TRUE)
 
   ## set frames
@@ -164,20 +166,20 @@ plot_settings <- modifyList(x = list(
         zlim = if(is.null(plot_settings$zlim_image)) range(image) else plot_settings$zlim_image,
         xlab = plot_settings$xlab,
         ylab = plot_settings$ylab,
-        main = paste0(plot_settings$main, " #",i),
+        main = ifelse(length(plot_settings$main)==1,paste0(plot_settings$main, " #",i),plot_settings$main[i]),
         col = plot_settings$col)
       graphics::box()
 
       ## axes
       if(plot_settings$axes) {
         xlab <- pretty(1:dim(x)[1])
-        xlab[c(1,length(xlab))] <- c(0,dim(x)[1])
-        xat <- seq(0,1,length.out = length(xlab))
+        xlab<-xlab[-length(xlab)]
+        xat <- seq(0,1-dim(x)[1]%%100/dim(x)[1],length.out = length(xlab))
         graphics::axis(side = 1, at = xat, labels = xlab)
 
         ylab <- pretty(1:dim(x)[2])
-        ylab[c(1,length(ylab))] <- c(0,dim(x)[2])
-        yat <- seq(0,1,length.out = length(ylab))
+        ylab<-xlab[-length(ylab)]
+        yat <- seq(0,1-dim(x)[2]%%100/dim(x)[2],length.out = length(ylab))
         graphics::axis(side = 2, at = yat, labels = ylab)
       }
 
@@ -201,10 +203,10 @@ plot_settings <- modifyList(x = list(
           x = par()$usr[4] * 1.04,
           y = par()$usr[2],
           labels = if(is.null(plot_settings$zlim_image)) {
-            format(max(x), digits = 1, scientific = TRUE)
-            } else {
-            format(plot_settings$zlim_image[2], digits = 1, scientific = TRUE)
-            },
+            format(max(x), digits = plot_settings$digits, scientific = plot_settings$scientific)
+          } else {
+            format(plot_settings$zlim_image[2], digits = plot_settings$digits, scientific = plot_settings$scientific)
+          },
           cex = 0.7,
           srt = 270,
           pos = 3)
@@ -212,9 +214,9 @@ plot_settings <- modifyList(x = list(
           x = par()$usr[4] * 1.04,
           y = par()$usr[3],
           labels = if(is.null(plot_settings$zlim_image)) {
-            format(min(x), digits = 1, scientific = TRUE)
+            format(min(x), digits = plot_settings$digits, scientific = plot_settings$scientific)
           } else {
-            format(plot_settings$zlim_image[1], digits = 1, scientific = TRUE)
+            format(plot_settings$zlim_image[1], digits = plot_settings$digits, scientific = plot_settings$scientific)
           },
           cex = 0.7,
           pos = 3,
@@ -231,7 +233,7 @@ plot_settings <- modifyList(x = list(
         zlim = if(is.null(plot_settings$zlim_image)) range(x) else plot_settings$zlim_image,
         xlab = plot_settings$xlab,
         ylab = plot_settings$ylab,
-        main = paste0(plot_settings$main, " #",i),
+        main = ifelse(length(plot_settings$main)==1,paste0(plot_settings$main, " #",i),plot_settings$main[i]),
         col = plot_settings$col)
       graphics::box()
      }
@@ -239,13 +241,13 @@ plot_settings <- modifyList(x = list(
     ## axes
     if(plot_settings$axes) {
       xlab <- pretty(1:dim(x)[1])
-      xlab[c(1,length(xlab))] <- c(0,dim(x)[1])
-      xat <- seq(0,1,length.out = length(xlab))
+      xlab<-xlab[-length(xlab)]
+      xat <- seq(0,1-dim(x)[1]%%100/dim(x)[1],length.out = length(xlab))
       graphics::axis(side = 1, at = xat, labels = xlab)
 
       ylab <- pretty(1:dim(x)[2])
-      ylab[c(1,length(ylab))] <- c(0,dim(x)[1])
-      yat <- seq(0,1,length.out = length(ylab))
+      ylab<-xlab[-length(ylab)]
+      yat <- seq(0,1-dim(x)[2]%%100/dim(x)[2],length.out = length(ylab))
       graphics::axis(side = 2, at = yat, labels = ylab)
     }
   }
